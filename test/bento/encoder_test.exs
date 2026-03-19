@@ -51,12 +51,16 @@ defmodule Bento.EncoderTest do
   test "Range" do
     assert to_benc(1..3) == "li1ei2ei3ee"
     assert to_benc(-1..1) == "li-1ei0ei1ee"
+    assert to_benc(3..1//-1) == "li3ei2ei1ee"
+    assert to_benc(1..0//1) == "le"
   end
 
   test "Stream" do
     range = 1..10
     assert to_benc(Stream.take(range, 0)) == "le"
     assert to_benc(Stream.take(range, 3)) == "li1ei2ei3ee"
+    assert to_benc(Stream.map(1..3, &(&1 * 2))) == "li2ei4ei6ee"
+    assert to_benc(Stream.cycle([1]) |> Stream.take(0)) == "le"
   end
 
   test "EncodeError" do
